@@ -2,6 +2,7 @@
 #define TGRID2D_H
 
 #include <algorithm>
+#include <functional>
 #include <vector>
 
 namespace utils {
@@ -62,15 +63,25 @@ class Grid {
   size_t get_size_of() const { return sizeof(m_data) + (sizeof(m_data[0]) * m_data.size()); }
 
   /** Overload operators **/
-  // Grid2D<T> operator+(const Grid2D<T> &grid) const { return ...; }
+  Grid<T> operator+=(Grid<T> &grid) {
+    auto data = grid.get_data();
+    transform(m_data.begin(), m_data.end(), data.begin(), m_data.begin(), std::plus<T>());
+    return *this;
+  }
 
-  Grid<T> operator*(T value) {
-    transform(m_data.begin(), m_data.end(), m_data.begin(), [value](T &c) { return c * value; });
+  Grid<T> operator-=(Grid<T> &grid) {
+    auto data = grid.get_data();
+    transform(m_data.begin(), m_data.end(), data.begin(), m_data.begin(), std::minus<T>());
     return *this;
   }
 
   Grid<T> operator*=(T value) {
     transform(m_data.begin(), m_data.end(), m_data.begin(), [value](T &c) { return c * value; });
+    return *this;
+  }
+
+  Grid<T> operator/=(T value) {
+    transform(m_data.begin(), m_data.end(), m_data.begin(), [value](T &c) { return c / value; });
     return *this;
   }
 };
