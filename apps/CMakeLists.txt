@@ -6,3 +6,11 @@ add_executable (runit
 
 target_link_libraries (runit streaming ${STREAMING_EXTRA_LIBRARIES})
 
+
+
+add_executable (integrate
+	     integrate_main.cpp  
+  )
+
+target_link_libraries (integrate streaming ${STREAMING_EXTRA_LIBRARIES})
+
