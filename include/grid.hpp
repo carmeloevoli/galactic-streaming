@@ -17,6 +17,12 @@ public:
 
   Grid2D(size_t Nx, size_t Nz) { setGridSize(Nx, Nz); }
 
+  Grid2D( const Grid2D &other_grid) {
+    size_t Nx = other_grid.getNx();
+    size_t Nz = other_grid.getNz();
+    setGridSize(Nx, Nz);
+  }
+
   void setGridSize(size_t Nx, size_t Nz) {
     this->Nx = Nx;
     this->Nz = Nz;
