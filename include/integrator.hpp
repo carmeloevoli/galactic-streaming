@@ -2,6 +2,7 @@
 #define INTEGRATOR_HPP
 
 #include <vector>
+#include <functional>
 
 #include "grid.hpp"
 
@@ -14,7 +15,9 @@ class integrator_base {
  public:
   virtual ~integrator_base(){};
 
-  virtual double step(std::vector<utils::Grid<double>> &data, double time, double del_t) = 0;
+  virtual double step(std::vector<utils::Grid<double>> &data, 
+        std::function<utils::Grid<double>(utils::Grid<double> &)> ,
+        double time, double del_t) = 0;
 };
 
 }  // namespace integrators
