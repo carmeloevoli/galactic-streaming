@@ -54,11 +54,11 @@ message(STATUS "Code version: ${GIT_DESC} ${GIT_SHA1} ${GIT_REFSPEC}")
 # ----------------------------------------------------------------------------
 include_directories(include ${STREAMING_EXTRA_INCLUDES})
 
-add_library(streaming SHARED
-    src/main.cpp
-    "${git_revision_cpp}"
-    )
-    target_link_libraries(streaming ${STREAMING_EXTRA_LIBRARIES})
+#add_library(streaming SHARED
+#    src/main.cpp
+#    "${git_revision_cpp}"
+#    )
+#    target_link_libraries(streaming ${STREAMING_EXTRA_LIBRARIES})
 
 # create the output dir
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/output)
@@ -68,8 +68,10 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/output)
 #file(COPY ${STREAMING_DATA} DESTINATION ${PROJECT_BINARY_DIR}/data)
 
 # make examples
-add_executable(runit src/main.cpp)
-target_link_libraries (runit streaming ${STREAMING_EXTRA_LIBRARIES})
+add_subdirectory(src)
+add_subdirectory(apps)
+
+#add_executable(runit src/main.cpp)
 
 # Show summary.
 message (STATUS "CMAKE_SYSTEM .......... = ${CMAKE_SYSTEM}")
