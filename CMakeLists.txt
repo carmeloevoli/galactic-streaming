@@ -67,6 +67,9 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/output)
 #file(GLOB STREAMING_DATA "data/*.txt")
 #file(COPY ${STREAMING_DATA} DESTINATION ${PROJECT_BINARY_DIR}/data)
 
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin )
+
+
 # make examples
 add_subdirectory(src)
 add_subdirectory(apps)
