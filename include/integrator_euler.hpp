@@ -4,14 +4,12 @@
 #include "integrator.hpp"
 
 namespace integrators {
-    class integrator_euler : public integrator_base {
-    public:
-        integrator_euler();
+class integrator_euler : public integrator_base {
+ public:
+  integrator_euler();
 
-        double step(std::vector<utils::Grid2D<double>> &data, double time, double del_t); 
-
-
-    };
-}
+  double step(std::vector<utils::Grid<double>> &data, double time, double del_t);
+};
+}  // namespace integrators
 
 #endif

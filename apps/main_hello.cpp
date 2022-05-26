@@ -12,5 +12,11 @@ int main() {
 
   auto otherW = utils::Grid<double>(W);
   std::cout << " Other grid " << W.get_size() << "\n";
+
+  auto Wtest = utils::Grid<double>(2, 2, 3.5);
+  std::cout << Wtest.get(0) << "\n";
+  Wtest *= 2.0;
+  std::cout << Wtest.get(0) << "\n";
+
   return 0;
 }

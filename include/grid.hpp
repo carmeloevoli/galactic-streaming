@@ -1,6 +1,7 @@
 #ifndef TGRID2D_H
 #define TGRID2D_H
 
+#include <algorithm>
 #include <vector>
 
 namespace utils {
@@ -14,6 +15,11 @@ class Grid {
   Grid() : m_Nx(0), m_Nz(0) {}
 
   Grid(size_t Nx, size_t Nz) { set_grid_size(Nx, Nz); }
+
+  Grid(size_t Nx, size_t Nz, T value) {
+    set_grid_size(Nx, Nz);
+    std::fill(m_data.begin(), m_data.end(), value);
+  }
 
   Grid(const Grid &grid) {
     size_t Nx = grid.get_Nx();
@@ -57,6 +63,16 @@ class Grid {
 
   /** Overload operators **/
   // Grid2D<T> operator+(const Grid2D<T> &grid) const { return ...; }
+
+  Grid<T> operator*(T value) {
+    transform(m_data.begin(), m_data.end(), m_data.begin(), [value](T &c) { return c * value; });
+    return *this;
+  }
+
+  Grid<T> operator*=(T value) {
+    transform(m_data.begin(), m_data.end(), m_data.begin(), [value](T &c) { return c * value; });
+    return *this;
+  }
 };
 
 }  // namespace utils
