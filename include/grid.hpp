@@ -1,65 +1,64 @@
 #ifndef TGRID2D_H
 #define TGRID2D_H
 
-#include <cassert>
-#include <iostream>
-#include <string>
 #include <vector>
 
 namespace utils {
 
-template <typename T> class Grid2D {
-  std::vector<T> grid;
-  size_t Nx, Nz;
+template <typename T>
+class Grid {
+  std::vector<T> m_data;
+  size_t m_Nx, m_Nz;
 
-public:
-  Grid2D() : Nx(0), Nz(0) {}
+ public:
+  Grid() : m_Nx(0), m_Nz(0) {}
 
-  Grid2D(size_t Nx, size_t Nz) { setGridSize(Nx, Nz); }
+  Grid(size_t Nx, size_t Nz) { set_grid_size(Nx, Nz); }
 
-  Grid2D( const Grid2D &other_grid) {
-    size_t Nx = other_grid.getNx();
-    size_t Nz = other_grid.getNz();
-    setGridSize(Nx, Nz);
+  Grid(const Grid &grid) {
+    size_t Nx = grid.get_Nx();
+    size_t Nz = grid.get_Nz();
+    set_grid_size(Nx, Nz);
   }
 
-  void setGridSize(size_t Nx, size_t Nz) {
-    this->Nx = Nx;
-    this->Nz = Nz;
-    grid.resize(Nx * Nz);
+  void set_grid_size(size_t Nx, size_t Nz) {
+    m_Nx = Nx;
+    m_Nz = Nz;
+    m_data.resize(Nx * Nz);
   }
 
   /** Accessor / Mutator */
-  T &get(size_t ix, size_t iz) { return grid[ix * Nz + iz]; }
-  T &get(const size_t &i) { return grid[i]; }
+  T &get(size_t ix, size_t iz) { return m_data[ix * m_Nz + iz]; }
+  T &get(const size_t &i) { return m_data[i]; }
+  const T &get(size_t ix, size_t iz) const { return m_data[ix * m_Nz + iz]; }
+  const T &get(const size_t &i) const { return m_data[i]; }
 
   /* Min / Max */
-  T max() const { return *max_element(grid.begin(), grid.end()); }
-  T min() const { return *min_element(grid.begin(), grid.end()); }
+  T max() const { return *max_element(m_data.begin(), m_data.end()); }
+  T min() const { return *min_element(m_data.begin(), m_data.end()); }
 
-  /** Accessor */
-  const T &get(size_t ix, size_t iz) const {
-    assert(ix >= 0 && ix < Nx);
-    assert(iz >= 0 && iz < Nz);
-    return grid[ix * Nz + iz];
-  }
-
-  const T &get(const size_t &i) const { return grid[i]; }
-
-  T getValue(size_t ix, size_t iz) { return grid[ix * Nz + iz]; }
+  T get_value(size_t ix, size_t iz) { return m_data[ix * m_Nz + iz]; }
+  void set_value(size_t ix, size_t iz, T value) { m_data[ix * m_Nz + iz] = value; }
 
   /** Return a reference to the grid values */
-  std::vector<T> &getGrid() { return grid; }
+  std::vector<T> &get_data() { return m_data; }
 
-  void clearGrid() { grid.clear(); }
+  void clear_grid() { m_data.clear(); }
 
-  size_t getNx() const { return Nx; }
-  void setNx(size_t nx) { Nx = nx; }
-  size_t getNz() const { return Nz; }
-  void setNz(size_t nz) { Nz = nz; }
-  size_t getSize() const { return Nx * Nz; }
+  size_t get_Nx() const { return m_Nx; }
+  void set_Nx(size_t nx) { m_Nx = nx; }
+  size_t get_Nz() const { return m_Nz; }
+  void set_Nz(size_t nz) { m_Nz = nz; }
+
+  size_t get_size() const { return m_Nx * m_Nz; }
+
+  /** Calculates the total size of the grid in bytes */
+  size_t get_size_of() const { return sizeof(m_data) + (sizeof(m_data[0]) * m_data.size()); }
+
+  /** Overload operators **/
+  // Grid2D<T> operator+(const Grid2D<T> &grid) const { return ...; }
 };
 
-} // namespace utils
+}  // namespace utils
 
 #endif /* TGRID2D_H_ */
