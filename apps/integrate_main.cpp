@@ -41,6 +41,42 @@ double get_ana(utils::Grid<double> &waves, int t_ix, int t_iz) {
 }
 
 
+
+
+double get_ana_time_dep(utils::Grid<double> &waves, double time, int t_ix, int t_iz) {
+	size_t Nx=waves.get_Nx();
+	size_t Nz=waves.get_Nz();
+
+	std::vector<double> xGrid(Nx);
+	std::vector<double> zGrid(Nz);
+
+	double del_x = 1./(Nx-1.);
+	double del_z = 1./(Nz-1.);
+	for(size_t ix=0; ix<Nx; ++ix) {
+		xGrid[ix] = ix*del_x;
+	}
+	for(size_t iz=0; iz<Nz; ++iz) {
+		zGrid[iz] = iz*del_z;
+	}
+
+	double xVal = xGrid[t_ix];
+	double zVal = zGrid[t_iz];
+	double pi = M_PI;
+
+	return sin(pi*xVal)*sin(pi*zVal)*exp(-2*pi*time);
+
+}
+
+void set_ana_time_dep(utils::Grid<double> &waves, double time) {
+	size_t Nx=waves.get_Nx();
+	size_t Nz=waves.get_Nz();
+	for(size_t ix=1; ix<Nx-1; ++ix) {
+		for(size_t iz=1; iz<Nz-1; ++iz) {
+			waves.set_value(ix, iz, get_ana_time_dep(waves, time, ix, iz));
+		}
+	}
+}
+
 double get_l2error(utils::Grid<double> &waves) {
 	size_t Nx=waves.get_Nx();
 	size_t Nz=waves.get_Nz();
@@ -58,6 +94,62 @@ double get_l2error(utils::Grid<double> &waves) {
 	}
 	double l2err = sqrt(sum_diff_sqr/norm);
 	return l2err;
+}
+
+double get_l2error_time(utils::Grid<double> &waves, double time) {
+	size_t Nx=waves.get_Nx();
+	size_t Nz=waves.get_Nz();
+
+	double sum_diff_sqr=0;
+	double norm=0;
+	for(size_t ix=1; ix<Nx-1; ++ix) {
+		for(size_t iz=1; iz<Nz-1; ++iz) {
+			double ana = get_ana_time_dep(waves, time, ix, iz);
+			double num = waves.get_value(ix, iz);
+			double diffsqr = (ana-num)*(ana-num);
+			sum_diff_sqr += diffsqr;
+			norm += ana*ana;
+		}
+	}
+	double l2err = sqrt(sum_diff_sqr/norm);
+	return l2err;
+}
+
+
+utils::Grid<double> r_rhs_waves_time(utils::Grid<double> &waves,utils::Grid<double> &particles) {
+	size_t Nx=waves.get_Nx();
+	size_t Nz=waves.get_Nz();
+
+	std::vector<double> xGrid(Nx);
+	std::vector<double> zGrid(Nz);
+
+	double del_x = 1./(Nx-1.);
+	double del_z = 1./(Nz-1.);
+	for(size_t ix=0; ix<Nx; ++ix) {
+		xGrid[ix] = ix*del_x;
+	}
+	for(size_t iz=0; iz<Nz; ++iz) {
+		zGrid[iz] = iz*del_z;
+	}
+	double pi = M_PI;
+	utils::Grid<double> rhs_w(waves);
+	rhs_w.clear_grid();
+	for(size_t ix=1; ix<Nx-1; ++ix) {
+		double xVal = xGrid[ix];
+		for(size_t iz=1; iz<Nz-1; ++iz) {
+			double zVal = zGrid[iz];
+
+			// Add derivative of waves
+			double rhs_local = (waves.get_value(ix+1, iz) - 2.*waves.get_value(ix, iz)
+					+ waves.get_value(ix-1, iz))/(del_x*del_x);
+			rhs_local += (waves.get_value(ix, iz+1) - 2.*waves.get_value(ix, iz)
+					+ waves.get_value(ix, iz-1))/(del_z*del_z);
+
+			rhs_w.set_value(ix, iz, rhs_local);
+		}
+	}
+
+	return rhs_w;
 }
 
 utils::Grid<double> f_rhs_waves(utils::Grid<double> &waves,utils::Grid<double> &particles) {
@@ -107,49 +199,92 @@ utils::Grid<double> f_rhs_waves(utils::Grid<double> &waves,utils::Grid<double> &
 	return rhs_w;
 }
 
+enum class TestType {
+	SteadyState,
+	TimeDependent
+};
 
 int main() {
 	utils::Grid<double> waves(100,100);
 	utils::Grid<double> particles(100,100);
 
 
-	std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_waves;
-	std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
 
 
 //	integrators::integrator_euler integrator(10);
-//	integrators::integrator_RK2 integrator(10);
-	integrators::integrator_RK4 integrator(waves,10);
+	integrators::integrator_RK2 integrator(10);
+//	integrators::integrator_RK4 integrator(waves,10);
 	double time = 0.;
 	double del_t = 0.001;
 	int i_time = 0;
-	del_t = 2.e-5;
+	del_t = 2.e-6;
 
-//	for(int i_time=0; i_time<50000; ++i_time) {
-	while(time<1.) {
-		time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
-		if(i_time%100==0) {
-			utils::Grid<double> rhs = f_rhs_waves(waves, particles);
-			std::cout << " step " << i_time << " -> " << time << " ";
-			std::cout << waves.get_value(10, 50) << " ";
-			std::cout << waves.get_value(20, 50) << " ";
-			std::cout << waves.get_value(30, 50) << " ";
-			std::cout << rhs.get_value(30,50) << " ";
-			std::cout << "\n";
-			std::cout << "   --> ";
-			std::cout << get_ana(waves,  10,  50) << " (";
-			std::cout << get_ana(waves,  10,  50)-waves.get_value(10, 50) << "), ";
-			std::cout << get_ana(waves,  20,  50) << " (";
-			std::cout << get_ana(waves,  20,  50)-waves.get_value(20, 50) << "), ";
-			std::cout << get_ana(waves,  30,  50) << " (";
-			std::cout << get_ana(waves,  30,  50)-waves.get_value(30, 50) << ") ";
-			std::cout << "\n";
+	TestType my_test = TestType::TimeDependent;
+
+	if(my_test == TestType::SteadyState) {
+		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_waves;
+		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
+
+		//	for(int i_time=0; i_time<50000; ++i_time) {
+		while(time<1.) {
+			time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
+			if(i_time%100==0) {
+				utils::Grid<double> rhs = f_rhs_waves(waves, particles);
+				std::cout << " step " << i_time << " -> " << time << " ";
+				std::cout << waves.get_value(10, 50) << " ";
+				std::cout << waves.get_value(20, 50) << " ";
+				std::cout << waves.get_value(30, 50) << " ";
+				std::cout << rhs.get_value(30,50) << " ";
+				std::cout << "\n";
+				std::cout << "   --> ";
+				std::cout << get_ana(waves,  10,  50) << " (";
+				std::cout << get_ana(waves,  10,  50)-waves.get_value(10, 50) << "), ";
+				std::cout << get_ana(waves,  20,  50) << " (";
+				std::cout << get_ana(waves,  20,  50)-waves.get_value(20, 50) << "), ";
+				std::cout << get_ana(waves,  30,  50) << " (";
+				std::cout << get_ana(waves,  30,  50)-waves.get_value(30, 50) << ") ";
+				std::cout << "\n";
+			}
+			i_time++;
 		}
-		i_time++;
+
+		std::cout << " l2 error: " << get_l2error(waves) << "\n";
+
+	} else if (my_test== TestType::TimeDependent) {
+
+		double time = 0.;
+		double del_t = 0.001;
+		int i_time = 0;
+		del_t = 2.e-5;
+
+		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = r_rhs_waves_time;
+		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
+
+		set_ana_time_dep(waves, 0.);
+		while(time<0.01) {
+
+			time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
+			if(i_time%100==0) {
+				std::cout << " step " << i_time << " at " << time << " -> ";
+				std::cout << waves.get_value(10, 50) << " ";
+				std::cout << waves.get_value(20, 50) << " ";
+				std::cout << waves.get_value(30, 50) << " ";
+				std::cout << "\n";
+				std::cout << "   --> ";
+				std::cout << get_ana_time_dep(waves, time, 10,  50) << " (";
+				std::cout << get_ana_time_dep(waves, time, 10,  50)-waves.get_value(10, 50) << "), ";
+				std::cout << get_ana_time_dep(waves, time, 20,  50) << " (";
+				std::cout << get_ana_time_dep(waves, time, 20,  50)-waves.get_value(20, 50) << "), ";
+				std::cout << get_ana_time_dep(waves, time, 30,  50) << " (";
+				std::cout << get_ana_time_dep(waves, time, 30,  50)-waves.get_value(30, 50) << ") ";
+				std::cout << "\n";
+				double l2_error = get_l2error_time(waves, time);
+				std::cout << " l2 error " << l2_error << "\n";
+			}
+			i_time++;
+
+		}
 	}
-
-	std::cout << " l2 error: " << get_l2error(waves) << "\n";
-
 //	std::cout << " Testing operators \n";
 //	utils::Grid<double> thingy(2,2,10.);
 //	std::cout << " At 1,1 " << thingy.get_value(1,1) << "\n";
