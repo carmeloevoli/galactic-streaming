@@ -14,3 +14,10 @@ add_executable (integrate
 
 target_link_libraries (integrate streaming ${STREAMING_EXTRA_LIBRARIES})
 
+
+
+add_executable (galaxy
+	     galaxy_builder.cpp  
+  )
+
+target_link_libraries (galaxy streaming ${STREAMING_EXTRA_LIBRARIES})
