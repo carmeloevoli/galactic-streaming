@@ -1,5 +1,6 @@
 #include <integrator_euler.hpp>
 #include <integrator_RK2.hpp>
+#include <integrator_RK4.hpp>
 #include <iostream>
 #include <math.h>
 
@@ -116,8 +117,9 @@ int main() {
 	std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
 
 
-//	integrators::integrator_euler euler(10);
-	integrators::integrator_RK2 euler(10);
+//	integrators::integrator_euler integrator(10);
+//	integrators::integrator_RK2 integrator(10);
+	integrators::integrator_RK4 integrator(waves,10);
 	double time = 0.;
 	double del_t = 0.001;
 	int i_time = 0;
@@ -125,7 +127,7 @@ int main() {
 
 //	for(int i_time=0; i_time<50000; ++i_time) {
 	while(time<1.) {
-		time = euler.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
+		time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
 		if(i_time%100==0) {
 			utils::Grid<double> rhs = f_rhs_waves(waves, particles);
 			std::cout << " step " << i_time << " -> " << time << " ";

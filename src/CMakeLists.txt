@@ -6,6 +6,7 @@ add_library(streaming SHARED
 	hello_code.cpp
 	integrator_euler.cpp
 	integrator_RK2.cpp
+	integrator_RK4.cpp
 	params.cpp
 	utils.cpp
 	)
