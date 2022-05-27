@@ -8,4 +8,7 @@ int main() {
   galaxy.build_momentum_axis();
   galaxy.build_rigidity_axis();
   galaxy.build_initial_condition();
+  galaxy.build_wave_source();
+  galaxy.build_cr_source();
+  galaxy.build_advection();
 }

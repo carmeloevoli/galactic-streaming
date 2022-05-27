@@ -57,6 +57,7 @@ static constexpr double gigaparsec = giga * parsec;
 static constexpr double gram = 1e-3 * kilogram;
 
 // ENERGY UNITS
+static constexpr double erg = 1e-7 * joule;
 static constexpr double electronvolt = 1.60217657e-19 * joule;
 
 // RIGIDITY UNITS
@@ -107,7 +108,7 @@ static constexpr double hbarPlanck = hPlanck / 2. / M_PI;
 static constexpr double hbarC = hbarPlanck * cLight;
 static constexpr double kBoltzmann = 1.3806488e-23 * joule / kelvin;
 static constexpr double electronRadius = 2.8179403227e-15 * meter;
-static constexpr double elementary_charge = 1.60217662e-19 * coulomb;
+static constexpr double elementaryCharge = 1.60217662e-19 * coulomb;
 static constexpr double barn = 1e-28 * m2;
 static constexpr double mbarn = 1e-3 * barn;
 static constexpr double alpha = 7.297352e-3;

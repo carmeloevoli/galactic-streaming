@@ -18,9 +18,12 @@ class Galaxy {
   std::vector<double> m_R;
   std::vector<double> m_k;
   std::vector<double> m_z;
+  std::vector<double> m_vA;
 
   utils::Grid<double> m_W;
   utils::Grid<double> m_f;
+  utils::Grid<double> m_Q_W;
+  utils::Grid<double> m_Q_f;
 
   //   TGrid2D<double> Q_w;
   //   TGrid2D<double> Q_cr;
@@ -43,12 +46,9 @@ class Galaxy {
   void build_rigidity_axis();
   void build_space_axis();
   void build_initial_condition();
-  //   void build_wave_source_term();
-  //   void build_CR_source_term();
-  //   double compute_constant_CR_source_term();
-  //   double compute_constant_wave_source_term();
-  //   void build_W();
-  //   void build_vA();
+  void build_wave_source();
+  void build_cr_source();
+  void build_advection();
   //   void build_energy_losses();
   //   void build_magnetic_field();
 };

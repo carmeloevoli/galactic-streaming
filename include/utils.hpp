@@ -35,9 +35,23 @@ std::vector<T> build_log_axis(const T& min, const T& max, const size_t& size) {
   return v;
 }
 
-inline double larmor_radius(double R, double B) { return R / SI::cLight / B; }
+inline double rigidity_2_radius(double R, double B) { return R / SI::cLight / B; }
 
-inline double inverse_larmor_radius(double k, double B) { return SI::cLight * B / k; }
+inline double radius_2_rigidity(double r_L, double B) { return SI::cLight * B * r_L; }
+
+inline double magnetic_energy_density(double B) {
+  const auto mu_0 = 1.25663706212e-6;
+  return .5 * B * B / mu_0;
+}
+
+inline double Gaussian(double x, double sigma) {
+  const auto sigma2 = sigma * sigma;
+  return std::pow(2. * M_PI * sigma2, -0.5) * std::exp(-(x * x) / 2. / sigma2);
+}
+
+inline double power_law_with_cutoff(double x, double slope, double cutoff) {
+  return std::pow(x, -slope) * std::exp(-x / cutoff);
+}
 
 }  // namespace utils
 
