@@ -2,16 +2,16 @@
 #define TGRID2D_H
 
 #include <algorithm>
-#include <functional>
-#include <vector>
-#include <iostream>
 #include <cassert>
+#include <functional>
+#include <iostream>
+#include <vector>
 
 namespace utils {
 
 template <typename T>
 class Grid {
-private:
+ private:
   std::vector<T> m_data;
   size_t m_Nx, m_Nz;
 
@@ -54,7 +54,7 @@ private:
   /** Return a reference to the grid values */
   std::vector<T> &get_data() const { return m_data; }
 
-  void clear_grid() { m_data.clear(); }
+  void clear_grid() { std::fill(m_data.begin(), m_data.end(), T(0)); }
 
   size_t get_Nx() const { return m_Nx; }
   void set_Nx(size_t nx) { m_Nx = nx; }
@@ -68,21 +68,21 @@ private:
 
   /** Overload operators **/
   Grid<T> operator=(const Grid<T> &t_grid) {
-	  const int t_Nx = t_grid.get_Nx();
-	  const int t_Nz = t_grid.get_Nz();
-	  set_grid_size(t_Nx, t_Nz);
-	  m_data = t_grid.m_data;
-	  return *this;
+    const int t_Nx = t_grid.get_Nx();
+    const int t_Nz = t_grid.get_Nz();
+    set_grid_size(t_Nx, t_Nz);
+    m_data = t_grid.m_data;
+    return *this;
   }
 
   Grid<T> operator+=(const Grid<T> &grid) {
-	  assert(this->get_size() == grid.get_size());
-//	  auto data = grid.get_data();
-	  transform(m_data.begin(), m_data.end(), grid.m_data.begin(), m_data.begin(), std::plus<T>());
-//	  for(int i=0; i<this->get_size(); ++i) {
-//		  this->m_data[i] += grid.m_data[i];
-//	  }
-	  return *this;
+    assert(this->get_size() == grid.get_size());
+    //	  auto data = grid.get_data();
+    transform(m_data.begin(), m_data.end(), grid.m_data.begin(), m_data.begin(), std::plus<T>());
+    //	  for(int i=0; i<this->get_size(); ++i) {
+    //		  this->m_data[i] += grid.m_data[i];
+    //	  }
+    return *this;
   }
 
   Grid<T> operator-=(Grid<T> &grid) {
@@ -102,18 +102,17 @@ private:
   }
 
   Grid<T> operator+(const Grid<T> &t_grid) const {
-	  assert(this->get_size() == t_grid.get_size());
-	  Grid<T> tmp = (*this);
-	  tmp += t_grid;
-	  return tmp;
+    assert(this->get_size() == t_grid.get_size());
+    Grid<T> tmp = (*this);
+    tmp += t_grid;
+    return tmp;
   }
 
   Grid<T> operator*(T value) {
-	  Grid<T> tmp = (*this);
-	  tmp *= value;
-	  return tmp;
+    Grid<T> tmp = (*this);
+    tmp *= value;
+    return tmp;
   }
-
 };
 
 }  // namespace utils
