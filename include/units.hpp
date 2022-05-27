@@ -24,7 +24,6 @@ static constexpr double tesla = 1;
 static constexpr double radian = meter / meter;
 static constexpr double hertz = 1 / second;
 static constexpr double joule = kilogram * pow2(meter / second);
-static constexpr double volt = joule / coulomb;
 static constexpr double watt = joule / second;
 static constexpr double gauss = 1e-4 * tesla;
 
@@ -59,13 +58,11 @@ static constexpr double gram = 1e-3 * kilogram;
 // ENERGY UNITS
 static constexpr double erg = 1e-7 * joule;
 static constexpr double electronvolt = 1.60217657e-19 * joule;
-
-// RIGIDITY UNITS
-static constexpr double kilovolt = kilo * volt;
-static constexpr double megavolt = mega * volt;
-static constexpr double gigavolt = giga * volt;
-static constexpr double teravolt = tera * volt;
-static constexpr double petavolt = peta * volt;
+static constexpr double kiloelectronvolt = kilo * electronvolt;
+static constexpr double megaelectronvolt = mega * electronvolt;
+static constexpr double gigaelectronvolt = giga * electronvolt;
+static constexpr double teraelectronvolt = tera * electronvolt;
+static constexpr double petaelectronvolt = peta * electronvolt;
 
 // ABBREVIATION
 static constexpr double sec = second;
@@ -76,11 +73,11 @@ static constexpr double pc = parsec;
 static constexpr double kpc = kiloparsec;
 static constexpr double Mpc = megaparsec;
 static constexpr double eV = electronvolt;
-static constexpr double kV = kilovolt;
-static constexpr double MV = megavolt;
-static constexpr double GV = gigavolt;
-static constexpr double TV = teravolt;
-static constexpr double PV = petavolt;
+static constexpr double keV = kiloelectronvolt;
+static constexpr double MeV = megaelectronvolt;
+static constexpr double GeV = gigaelectronvolt;
+static constexpr double TeV = teraelectronvolt;
+static constexpr double PV = petaelectronvolt;
 static constexpr double m2 = meter * meter;
 static constexpr double m3 = meter * meter * meter;
 static constexpr double km = kilo * meter;

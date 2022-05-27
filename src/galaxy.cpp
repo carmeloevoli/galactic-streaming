@@ -1,7 +1,10 @@
 #include "galaxy.hpp"
 
 #include <cassert>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <string>
 
 #include "utils.hpp"
 
@@ -14,20 +17,20 @@ void Galaxy::build_space_axis() {
             << m_z.back() / SI::kpc << " kpc with " << m_Nz << " points.\n";
 }
 
-void Galaxy::build_momentum_axis() {
+void Galaxy::build_wavenumber_axis() {
   m_k = utils::build_log_axis<double>(m_params.k_min, m_params.k_max, m_params.k_size);
   m_Nk = m_params.k_size;
   std::cout << "built k axis between " << m_k.front() * SI::pc << " pc^-1 and "
             << m_k.back() * SI::pc << " pc^-1 with " << m_Nk << " points.\n";
 }
 
-void Galaxy::build_rigidity_axis() {
+void Galaxy::build_momentum_axis() {
   assert(m_k.size() == m_Nk);
-  auto min_rigidity = utils::radius_2_rigidity(1. / m_params.k_max, m_params.magnetic_field);
-  auto max_rigidity = utils::radius_2_rigidity(1. / m_params.k_min, m_params.magnetic_field);
-  m_R = utils::build_log_axis<double>(min_rigidity, max_rigidity, m_Nk);
-  std::cout << "built R axis between " << m_R.front() / SI::GV << " GV and " << m_R.back() / SI::GV
-            << " GV with " << m_Nk << " points.\n";
+  auto min_momentum = utils::radius_2_momentum(1. / m_params.k_max, m_params.magnetic_field);
+  auto max_momentum = utils::radius_2_momentum(1. / m_params.k_min, m_params.magnetic_field);
+  m_p = utils::build_log_axis<double>(min_momentum, max_momentum, m_Nk);
+  std::cout << "built p axis between " << m_p.front() / SI::GeV << " GeV and "
+            << m_p.back() / SI::GeV << " GeV with " << m_Nk << " points.\n";
 }
 
 void Galaxy::build_initial_condition() {
@@ -62,19 +65,17 @@ void Galaxy::build_wave_source() {
   }
 }
 
-// double compute_constant_CR_source_term() {
-// 	double out = params.efficiency_cr_sn() * params.kinetic_energy_sn() * params.rate_sn();
-// 	out /= 4. * M_PI * params.source_disk_surface() * I_of_alpha(params.alpha()) * c_light *
-// pow4(mass_proton_c); 	return out;
-// }
-
 void Galaxy::build_cr_source() {
   m_Q_f = utils::Grid<double>(m_Nk, m_Nz);
-  const double q_0 = 1;  // compute_constant_CR_source_term();
+  auto disk_area = M_PI * pow2(m_params.disk_radius);
+  auto luminosity = m_params.eta_cr * m_params.E_SN * m_params.R_SN;
+  auto q_0 = luminosity / disk_area / 4. / M_PI / pow2(SI::protonMassC2);
+  q_0 /= utils::source_integral(m_params.slope, m_params.source_cutoff / SI::protonMassC2);
   const auto h = m_params.disk_height;
   for (size_t i = 0; i < m_Nk; ++i) {
-    auto x = m_R[i] / m_params.R_0;
-    auto spectrum = utils::power_law_with_cutoff(x, m_params.slope, m_params.source_cutoff);
+    auto x = m_p[i] / SI::protonMassC2;
+    auto x_cutoff = m_params.source_cutoff / SI::protonMassC2;
+    auto spectrum = utils::power_law_with_cutoff(x, m_params.slope, x_cutoff);
     for (size_t j = 0; j < m_Nz; ++j) {
       auto gauss_z = utils::Gaussian(m_z[j], h);
       m_Q_f.get(i, j) = q_0 * spectrum * gauss_z;
@@ -88,6 +89,23 @@ void Galaxy::build_advection() {
   for (size_t j = 0; j < m_Nz; ++j) {
     m_vA.emplace_back(2.0 * atan(m_z[j] / h) / M_PI * m_params.vA_infty);
   }
+}
+
+void Galaxy::dump_profiles() {
+  std::string filename = "test_profiles.txt";
+  std::cout << "dumping profiles on this file: " << filename << "\n";
+  std::ofstream out(filename.c_str());
+  out << "# z [kpc] \t vA [km/s] \t Q_W [pc/kyr] \t Q_f [] \n";
+  out << std::scientific << std::setprecision(5);
+  auto j = utils::closest<double>(m_p, 10. * SI::GeV);
+  for (size_t i = 0; i < m_z.size(); ++i) {
+    out << m_z[i] / SI::kpc << "\t";
+    out << m_vA[i] / (SI::km / SI::sec) << "\t";
+    out << m_Q_W.get(j, i) / (SI::pc / SI::kyr) << "\t";
+    out << m_Q_f.get(j, i) / (1. / pow3(SI::GeV * SI::meter) / SI::sec) << "\t";
+    out << "\n";
+  }
+  out.close();
 }
 
 }  // namespace core

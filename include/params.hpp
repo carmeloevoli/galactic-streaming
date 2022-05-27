@@ -17,11 +17,11 @@ class Params {
   double m_magnetic_field = 3. * SI::muG;
   double m_eta_B = 0.1;
   double m_k_0 = 1e-1 / SI::pc;
-  double m_R_0 = SI::GV;
   double m_slope = 4.3;
   double m_source_cutoff = SI::PV;
   double m_vA_infty = 10. * SI::km / SI::sec;
   double m_eta_wave = 0.001;
+  double m_eta_cr = 0.1;
   double m_E_SN = 1e51 * SI::erg;
   double m_R_SN = 1. / (30. * SI::year);
 
@@ -40,11 +40,11 @@ class Params {
   const double& magnetic_field = m_magnetic_field;
   const double& k_0 = m_k_0;
   const double& eta_B = m_eta_B;
-  const double& R_0 = m_R_0;
   const double& slope = m_slope;
   const double& source_cutoff = m_source_cutoff;
   const double& vA_infty = m_vA_infty;
   const double& eta_wave = m_eta_wave;
+  const double& eta_cr = m_eta_cr;
   const double& E_SN = m_E_SN;
   const double& R_SN = m_R_SN;
 };

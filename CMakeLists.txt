@@ -29,9 +29,9 @@ include_directories(external/plog/include)
 #list(APPEND STREAMING_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
 # GSL (required)
-#find_package(GSL REQUIRED)
-#list(APPEND STREAMING_EXTRA_INCLUDES ${GSL_INCLUDE_DIR})
-#list(APPEND STREAMING_EXTRA_LIBRARIES ${GSL_LIBRARIES})
+find_package(GSL REQUIRED)
+list(APPEND STREAMING_EXTRA_INCLUDES ${GSL_INCLUDE_DIR})
+list(APPEND STREAMING_EXTRA_LIBRARIES ${GSL_LIBRARIES})
 
 # Version info from Git
 option(ENABLE_GIT "Embedding information about code version from git" ON)
