@@ -14,6 +14,7 @@ utils::Grid<double> f_rhs_particles(utils::Grid<double> &waves,utils::Grid<doubl
 	return rhs_p;
 }
 
+
 double get_ana(utils::Grid<double> &waves, int t_ix, int t_iz) {
 	size_t Nx=waves.get_Nx();
 	size_t Nz=waves.get_Nz();
@@ -36,6 +37,26 @@ double get_ana(utils::Grid<double> &waves, int t_ix, int t_iz) {
 
 	return sin(pi*xVal)*sin(pi*zVal);
 
+}
+
+
+double get_l2error(utils::Grid<double> &waves) {
+	size_t Nx=waves.get_Nx();
+	size_t Nz=waves.get_Nz();
+
+	double sum_diff_sqr=0;
+	double norm=0;
+	for(size_t ix=1; ix<Nx-1; ++ix) {
+		for(size_t iz=1; iz<Nz-1; ++iz) {
+			double ana = get_ana(waves, ix, iz);
+			double num = waves.get_value(ix, iz);
+			double diffsqr = (ana-num)*(ana-num);
+			sum_diff_sqr += diffsqr;
+			norm += ana*ana;
+		}
+	}
+	double l2err = sqrt(sum_diff_sqr/norm);
+	return l2err;
 }
 
 utils::Grid<double> f_rhs_waves(utils::Grid<double> &waves,utils::Grid<double> &particles) {
@@ -99,13 +120,15 @@ int main() {
 	integrators::integrator_RK2 euler(10);
 	double time = 0.;
 	double del_t = 0.001;
+	int i_time = 0;
 	del_t = 2.e-5;
 
-	for(int i_time=0; i_time<50000; ++i_time) {
-		euler.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
+//	for(int i_time=0; i_time<50000; ++i_time) {
+	while(time<1.) {
+		time = euler.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
 		if(i_time%100==0) {
 			utils::Grid<double> rhs = f_rhs_waves(waves, particles);
-			std::cout << " step " << i_time << " ";
+			std::cout << " step " << i_time << " -> " << time << " ";
 			std::cout << waves.get_value(10, 50) << " ";
 			std::cout << waves.get_value(20, 50) << " ";
 			std::cout << waves.get_value(30, 50) << " ";
@@ -120,7 +143,10 @@ int main() {
 			std::cout << get_ana(waves,  30,  50)-waves.get_value(30, 50) << ") ";
 			std::cout << "\n";
 		}
+		i_time++;
 	}
+
+	std::cout << " l2 error: " << get_l2error(waves) << "\n";
 
 //	std::cout << " Testing operators \n";
 //	utils::Grid<double> thingy(2,2,10.);
