@@ -1,14 +1,30 @@
 #ifndef GALAXY_H
 #define GALAXY_H
 
+#include <vector>
+
+#include "grid.hpp"
+#include "params.hpp"
+
+namespace core {
+
 class Galaxy {
  protected:
-  std::vector<double> R;
-  std::vector<double> k;
-  std::vector<double> z;
+  utils::Params m_params;
+
+  size_t m_Nz;
+  size_t m_Nk;
+
+  std::vector<double> m_R;
+  std::vector<double> m_k;
+  std::vector<double> m_z;
+
+  utils::Grid<double> m_W;
+  utils::Grid<double> m_f;
+
   //   TGrid2D<double> Q_w;
   //   TGrid2D<double> Q_cr;
-  //   TGrid2D<double> W;
+
   //   // TGrid2D<double> W_ext;
   //   TGrid2D<double> D_kk;
   //   TGrid2D<double> D_zz;
@@ -21,20 +37,22 @@ class Galaxy {
   //   TGrid2D<double> fcr;
 
  public:
-  Galaxy() {}
+  Galaxy(const utils::Params& params) : m_params(params) {}
 
-  void build_momentum_axis(const double& k_min, const double& k_max, const size_t& k_size);
-  void build_rigidity_axis(const double& pc_min, const double& pc_max, const size_t& pc_size);
-  void build_space_axis(const double& halo_size, const size_t& k_size);
+  void build_momentum_axis();
+  void build_rigidity_axis();
+  void build_space_axis();
+  void build_initial_condition();
   //   void build_wave_source_term();
   //   void build_CR_source_term();
   //   double compute_constant_CR_source_term();
   //   double compute_constant_wave_source_term();
   //   void build_W();
-  //   void build_initial_condition();
   //   void build_vA();
   //   void build_energy_losses();
   //   void build_magnetic_field();
 };
+
+}  // namespace core
 
 #endif
