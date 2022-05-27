@@ -5,11 +5,13 @@
 #include <functional>
 #include <vector>
 #include <iostream>
+#include <cassert>
 
 namespace utils {
 
 template <typename T>
 class Grid {
+private:
   std::vector<T> m_data;
   size_t m_Nx, m_Nz;
 
@@ -46,11 +48,11 @@ class Grid {
   T max() const { return *max_element(m_data.begin(), m_data.end()); }
   T min() const { return *min_element(m_data.begin(), m_data.end()); }
 
-  T get_value(size_t ix, size_t iz) { return m_data[ix * m_Nz + iz]; }
+  T get_value(size_t ix, size_t iz) const { return m_data[ix * m_Nz + iz]; }
   void set_value(size_t ix, size_t iz, T value) { m_data[ix * m_Nz + iz] = value; }
 
   /** Return a reference to the grid values */
-  std::vector<T> &get_data() { return m_data; }
+  std::vector<T> &get_data() const { return m_data; }
 
   void clear_grid() { m_data.clear(); }
 
@@ -73,10 +75,14 @@ class Grid {
 	  return *this;
   }
 
-  Grid<T> operator+=(Grid<T> &grid) {
-    auto data = grid.get_data();
-    transform(m_data.begin(), m_data.end(), data.begin(), m_data.begin(), std::plus<T>());
-    return *this;
+  Grid<T> operator+=(const Grid<T> &grid) {
+	  assert(this->get_size() == grid.get_size());
+//	  auto data = grid.get_data();
+	  transform(m_data.begin(), m_data.end(), grid.m_data.begin(), m_data.begin(), std::plus<T>());
+//	  for(int i=0; i<this->get_size(); ++i) {
+//		  this->m_data[i] += grid.m_data[i];
+//	  }
+	  return *this;
   }
 
   Grid<T> operator-=(Grid<T> &grid) {
@@ -95,8 +101,15 @@ class Grid {
     return *this;
   }
 
+  Grid<T> operator+(const Grid<T> &t_grid) const {
+	  assert(this->get_size() == t_grid.get_size());
+	  Grid<T> tmp = (*this);
+	  tmp += t_grid;
+	  return tmp;
+  }
+
   Grid<T> operator*(T value) {
-	  Grid<T> & tmp = (*this);
+	  Grid<T> tmp = (*this);
 	  tmp *= value;
 	  return tmp;
   }

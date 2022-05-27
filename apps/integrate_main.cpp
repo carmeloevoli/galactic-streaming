@@ -30,7 +30,13 @@ int main() {
 	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
 	other_thingy *= 2.4;
 	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
-	other_thingy = thingy*3.4;
-	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
+	std::cout << " Before sum " << thingy.get_value(1,1) << " " << other_thingy.get_value(1, 1) << "\n";
+
+	double val1=4., val2=2.;
+	other_thingy = thingy*val1 + other_thingy*val2;
+	std::cout << " should be 4*[0] + 2*[1] " << other_thingy.get_value(1, 1) << "\n";
+	other_thingy += thingy;
+	std::cout << other_thingy.get_value(1, 1) << " " << thingy.get_value(1,1) << "\n";
+
 	return 0;
 }
