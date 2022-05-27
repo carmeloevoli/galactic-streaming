@@ -152,6 +152,16 @@ utils::Grid<double> r_rhs_waves_time(utils::Grid<double> &waves,utils::Grid<doub
 	return rhs_w;
 }
 
+
+utils::Grid<double> f_rhs_time_exp(utils::Grid<double> &waves,utils::Grid<double> &particles) {
+	size_t Nx=waves.get_Nx();
+	size_t Nz=waves.get_Nz();
+	double lambd = -2.;
+	utils::Grid<double> rhs_w(Nx, Nz);
+	rhs_w = waves*lambd;
+	return rhs_w;
+}
+
 utils::Grid<double> f_rhs_waves(utils::Grid<double> &waves,utils::Grid<double> &particles) {
 	size_t Nx=waves.get_Nx();
 	size_t Nz=waves.get_Nz();
@@ -201,7 +211,8 @@ utils::Grid<double> f_rhs_waves(utils::Grid<double> &waves,utils::Grid<double> &
 
 enum class TestType {
 	SteadyState,
-	TimeDependent
+	TimeDependent,
+	TimeExp
 };
 
 int main() {
@@ -212,14 +223,14 @@ int main() {
 
 
 //	integrators::integrator_euler integrator(10);
-	integrators::integrator_RK2 integrator(10);
-//	integrators::integrator_RK4 integrator(waves,10);
+//	integrators::integrator_RK2 integrator(10);
+	integrators::integrator_RK4 integrator(waves,10);
 	double time = 0.;
 	double del_t = 0.001;
 	int i_time = 0;
 	del_t = 2.e-6;
 
-	TestType my_test = TestType::TimeDependent;
+	TestType my_test = TestType::TimeExp;
 
 	if(my_test == TestType::SteadyState) {
 		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_waves;
@@ -284,7 +295,31 @@ int main() {
 			i_time++;
 
 		}
+	} else if(my_test==TestType::TimeExp) {
+		double time = 0.;
+		double del_t = 0.001;
+		int i_time = 0;
+		del_t = 0.01;
+
+		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_time_exp;
+		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
+
+		waves.set_value(2, 2, 1.);
+
+		while(time<1.) {
+
+			time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
+			if(i_time%10==0) {
+				std::cout << " step " << i_time << " at " << time << " -> ";
+				std::cout << waves.get_value(2, 2) << " ";
+				std::cout << waves.get_value(2, 2) - exp(-2.*time);
+				std::cout << "\n";
+			}
+			i_time++;
+
+		}
 	}
+
 //	std::cout << " Testing operators \n";
 //	utils::Grid<double> thingy(2,2,10.);
 //	std::cout << " At 1,1 " << thingy.get_value(1,1) << "\n";
