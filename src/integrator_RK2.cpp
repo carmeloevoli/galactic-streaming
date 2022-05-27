@@ -21,32 +21,21 @@ double integrator_RK2::step(utils::Grid<double> &waves,  utils::Grid<double> &pa
 	// get RHS
 	utils::Grid<double> vec_rhs_waves = rhs_waves(waves,particles);
 	utils::Grid<double> vec_rhs_particles = rhs_particles(waves,particles);
+
 	// Do full step
-	vec_rhs_waves *= del_t;
-	vec_rhs_particles *= del_t;
-	// Apply changes
-	waves += vec_rhs_waves;
-	particles += vec_rhs_particles;
+	waves += vec_rhs_waves*del_t;
+	particles += vec_rhs_particles*del_t;
 
 
 	// second Runge-Kutta step
 	// get RHS
 	vec_rhs_waves = rhs_waves(waves,particles);
 	vec_rhs_particles = rhs_particles(waves,particles);
+
 	// Do half step
-	vec_rhs_waves *= 0.5*del_t;
-	vec_rhs_particles *= 0.5*del_t;
+	waves = waves_old*0.5 + waves*0.5 + vec_rhs_waves*0.5*del_t;
+	particles = particles_old*0.5 + particles*0.5 + vec_rhs_particles*0.5*del_t;
 
-	waves_old *= 0.5;
-	particles_old *= 0.5;
-
-	waves *= 0.5;
-	particles *= 0.5;
-
-	waves += waves_old;
-	waves += vec_rhs_waves;
-	particles += particles_old;
-	particles += vec_rhs_particles;
 
 //	waves += del_t*vec_rhs_waves;
 //	particles += del_t*vec_rhs_particles;
