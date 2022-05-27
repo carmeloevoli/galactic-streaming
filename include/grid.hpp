@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <iostream>
 
 namespace utils {
 
@@ -22,10 +23,11 @@ class Grid {
     std::fill(m_data.begin(), m_data.end(), value);
   }
 
-  Grid(const Grid &grid) {
-    size_t Nx = grid.get_Nx();
-    size_t Nz = grid.get_Nz();
+  Grid(const Grid &t_grid) {
+    size_t Nx = t_grid.get_Nx();
+    size_t Nz = t_grid.get_Nz();
     set_grid_size(Nx, Nz);
+    m_data = t_grid.m_data;
   }
 
   void set_grid_size(size_t Nx, size_t Nz) {
@@ -63,6 +65,14 @@ class Grid {
   size_t get_size_of() const { return sizeof(m_data) + (sizeof(m_data[0]) * m_data.size()); }
 
   /** Overload operators **/
+  Grid<T> operator=(const Grid<T> &t_grid) {
+	  const int t_Nx = t_grid.get_Nx();
+	  const int t_Nz = t_grid.get_Nz();
+	  set_grid_size(t_Nx, t_Nz);
+	  m_data = t_grid.m_data;
+	  return *this;
+  }
+
   Grid<T> operator+=(Grid<T> &grid) {
     auto data = grid.get_data();
     transform(m_data.begin(), m_data.end(), data.begin(), m_data.begin(), std::plus<T>());
@@ -84,6 +94,13 @@ class Grid {
     transform(m_data.begin(), m_data.end(), m_data.begin(), [value](T &c) { return c / value; });
     return *this;
   }
+
+  Grid<T> operator*(T value) {
+	  Grid<T> & tmp = (*this);
+	  tmp *= value;
+	  return tmp;
+  }
+
 };
 
 }  // namespace utils

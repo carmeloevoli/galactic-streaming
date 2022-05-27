@@ -22,14 +22,15 @@ int main() {
 	double del_t = 0.1;
 	euler.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
 
-//	utils::Grid<double> thingy(2,2,10.);
-//	std::cout << " At 1,1 " << thingy.get_value(1,1) << "\n";
-//	utils::Grid<double> other_thingy(2,2,1.);
-//	other_thingy = thingy;
-//	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
-//	other_thingy *= 2.4;
-//	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
-//	other_thingy = thingy*2.4;
-//	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
+	std::cout << " Testing operators \n";
+	utils::Grid<double> thingy(2,2,10.);
+	std::cout << " At 1,1 " << thingy.get_value(1,1) << "\n";
+	utils::Grid<double> other_thingy(2,2,1.);
+	other_thingy = thingy;
+	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
+	other_thingy *= 2.4;
+	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
+	other_thingy = thingy*3.4;
+	std::cout << " At 1,1 " << other_thingy.get_value(1,1) << "\n";
 	return 0;
 }
