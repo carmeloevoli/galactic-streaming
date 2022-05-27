@@ -15,8 +15,9 @@ class integrator_base {
  public:
   virtual ~integrator_base(){};
 
-  virtual double step(std::vector<utils::Grid<double>> &data, 
-        std::function<utils::Grid<double>(utils::Grid<double> &)> ,
+  virtual double step(utils::Grid<double> &waves,  utils::Grid<double> &particles,
+        std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_waves,
+        std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_particles,
         double time, double del_t) = 0;
 };
 
