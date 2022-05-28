@@ -21,3 +21,9 @@ add_executable (galaxy
   )
 
 target_link_libraries (galaxy streaming ${STREAMING_EXTRA_LIBRARIES})
+
+add_executable (test_adaptive
+	     test_integrate_adaptive.cpp  
+  )
+
+target_link_libraries (test_adaptive streaming ${STREAMING_EXTRA_LIBRARIES})

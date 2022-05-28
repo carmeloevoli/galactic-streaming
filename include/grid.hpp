@@ -6,6 +6,8 @@
 #include <functional>
 #include <iostream>
 #include <vector>
+#include <numeric>
+#include <math.h>
 
 namespace utils {
 
@@ -66,6 +68,13 @@ class Grid {
   /** Calculates the total size of the grid in bytes */
   size_t get_size_of() const { return sizeof(m_data) + (sizeof(m_data[0]) * m_data.size()); }
 
+  /** Calculates the RMS of the field */
+  double get_RMS() const {
+	  double sq_sum = std::inner_product(m_data.begin(), m_data.end(), m_data.begin(), 0.0);
+	  double RMS_value = sqrt(sq_sum / m_data.size());
+	  return RMS_value;
+  }
+
   /** Overload operators **/
   Grid<T> operator=(const Grid<T> &t_grid) {
     const int t_Nx = t_grid.get_Nx();
@@ -85,9 +94,9 @@ class Grid {
     return *this;
   }
 
-  Grid<T> operator-=(Grid<T> &grid) {
-    auto data = grid.get_data();
-    transform(m_data.begin(), m_data.end(), data.begin(), m_data.begin(), std::minus<T>());
+  Grid<T> operator-=(const Grid<T> &grid) {
+	  assert(this->get_size() == grid.get_size());
+    transform(m_data.begin(), m_data.end(), grid.m_data.begin(), m_data.begin(), std::minus<T>());
     return *this;
   }
 
@@ -108,11 +117,19 @@ class Grid {
     return tmp;
   }
 
+  Grid<T> operator-(const Grid<T> &t_grid) const {
+     assert(this->get_size() == t_grid.get_size());
+     Grid<T> tmp = (*this);
+     tmp -= t_grid;
+     return tmp;
+   }
+
   Grid<T> operator*(T value) {
     Grid<T> tmp = (*this);
     tmp *= value;
     return tmp;
   }
+
 };
 
 }  // namespace utils

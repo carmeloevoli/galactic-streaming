@@ -5,7 +5,9 @@
 
 using namespace integrators;
 
-integrator_euler::integrator_euler(int verbosity) : integrator_base(verbosity) {}
+integrator_euler::integrator_euler(int verbosity) : integrator_base(verbosity) {
+	scheme_order = 1.;
+}
 
 double integrator_euler::step(utils::Grid<double> &waves,  utils::Grid<double> &particles,
 		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> &rhs_waves,

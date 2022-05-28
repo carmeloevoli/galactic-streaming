@@ -131,14 +131,10 @@ utils::Grid<double> r_rhs_waves_time(utils::Grid<double> &waves,utils::Grid<doub
 	for(size_t iz=0; iz<Nz; ++iz) {
 		zGrid[iz] = iz*del_z;
 	}
-	double pi = M_PI;
 	utils::Grid<double> rhs_w(waves);
 	rhs_w.clear_grid();
 	for(size_t ix=1; ix<Nx-1; ++ix) {
-		double xVal = xGrid[ix];
 		for(size_t iz=1; iz<Nz-1; ++iz) {
-			double zVal = zGrid[iz];
-
 			// Add derivative of waves
 			double rhs_local = (waves.get_value(ix+1, iz) - 2.*waves.get_value(ix, iz)
 					+ waves.get_value(ix-1, iz))/(del_x*del_x);

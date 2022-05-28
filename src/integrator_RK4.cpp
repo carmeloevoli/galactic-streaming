@@ -7,6 +7,8 @@ using namespace integrators;
 
 integrator_RK4::integrator_RK4(utils::Grid<double> &waves, int verbosity):
 		integrator_base(verbosity) {
+	scheme_order = 4.;
+
 	int Nx = waves.get_Nx();
 	int Nz = waves.get_Nz();
 

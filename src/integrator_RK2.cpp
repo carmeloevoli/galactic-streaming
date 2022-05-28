@@ -5,7 +5,9 @@
 
 using namespace integrators;
 
-integrator_RK2::integrator_RK2(int verbosity) : integrator_base(verbosity) {}
+integrator_RK2::integrator_RK2(int verbosity) : integrator_base(verbosity) {
+	scheme_order = 2.;
+}
 
 double integrator_RK2::step(utils::Grid<double> &waves,  utils::Grid<double> &particles,
 		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> &rhs_waves,
