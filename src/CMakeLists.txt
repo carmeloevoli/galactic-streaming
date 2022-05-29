@@ -11,8 +11,12 @@ add_library(streaming SHARED
 	shock_acceleration.cpp
 	params.cpp
 	utils.cpp
+	hdf5_output.cpp
 	)
 
 
-target_link_libraries(streaming ${STREAMING_EXTRA_LIBRARIES})
+target_link_libraries(streaming
+ 	PUBLIC ${STREAMING_EXTRA_LIBRARIES}
+ 	PUBLIC SerialHdf5
+ )
 

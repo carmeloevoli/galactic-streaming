@@ -56,6 +56,8 @@ class Grid {
   /** Return a reference to the grid values */
   std::vector<T> &get_data() const { return m_data; }
 
+  std::vector<T> get_data_copy() const {return m_data; }
+
   void clear_grid() { std::fill(m_data.begin(), m_data.end(), T(0)); }
 
   size_t get_Nx() const { return m_Nx; }
