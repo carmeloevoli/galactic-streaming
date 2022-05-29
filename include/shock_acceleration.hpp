@@ -13,6 +13,8 @@ public:
 		void make_coord_axes(int Nx, int Np);
 		utils::Grid<double> get_rhs(utils::Grid<double> &waves, utils::Grid<double> &particles);
 		utils::Grid<double> get_rhs_waves(utils::Grid<double> &waves, utils::Grid<double> &particles);
+		std::vector<double> get_spatial_grid() const {return x_val;}
+		std::vector<double> get_momentum_grid() const {return p_val;}
 private:
 		void set_velocity();
 		std::vector<double> x_val, p_val;

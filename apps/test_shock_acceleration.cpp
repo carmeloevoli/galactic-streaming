@@ -2,6 +2,7 @@
 #include "integrator_euler.hpp"
 #include "integrator_RK2.hpp"
 #include "integrator_RK4.hpp"
+#include "hdf5_output.hpp"
 
 #include <iostream>
 #include <memory>
@@ -45,8 +46,7 @@ int main() {
 
 	shocks::shock_acceleration accelerator(Nx,Np);
 	double time = 0.;
-	double del_t = 0.01;
-	int i_time = 0;
+	double del_t = 2.e-5;
 
 	std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = std::bind(&shocks::shock_acceleration::get_rhs_waves, accelerator, std::placeholders::_1, std::placeholders::_2);
 	std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = std::bind(&shocks::shock_acceleration::get_rhs, accelerator, std::placeholders::_1, std::placeholders::_2);
@@ -55,17 +55,30 @@ int main() {
 //		accelerator.get_rhs( a, b);
 //	}
 
+	// Prepare storage operator
+	hdf5_IO::hdf5_writer storage("shock_test.h5");
+	storage.write_grids(accelerator.get_spatial_grid(), accelerator.get_momentum_grid());
+
 
 //	std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_time_exp_waves;
 
 	double epsilon0 = 1.e-3;
-	for(int i_time=0; i_time<10; ++i_time) {
-	std::cout << " particles " << particles.get(50, 2) << "\n";
-	time = integrator->step(waves, particles,
-					rhs_waves, rhs_particles, time, del_t);
 
-	std::cout << " particles " << particles.get(50, 2) << "\n";
+	size_t i_step = 0;
+	while(i_step <2001) {
+
+		std::cout << " particles " << particles.get(50, 2) << "\n";
+		time = integrator->step(waves, particles,
+				rhs_waves, rhs_particles, time, del_t);
+
+		std::cout << " particles " << particles.get(50, 2) << "\n";
+
+		if(i_step%100==0)
+		storage.write_timestep(waves, particles, time, i_step);
+
+		i_step++;
 	}
+
 
 	return 0;
 }

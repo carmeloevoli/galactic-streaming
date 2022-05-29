@@ -10,7 +10,7 @@ shock_acceleration::shock_acceleration(int Nx, int Np) {
 
 	compression_ratio = 4.;
 	make_coord_axes(Nx, Np);
-	diffusion_strength = 1.;
+	diffusion_strength = 0.1;
 	source_strength = 1.;
 
 }
@@ -73,8 +73,8 @@ utils::Grid<double> shock_acceleration::get_rhs(utils::Grid<double> &waves,
 	assert(Nx==m_Nx && Nz==m_Np);
 
 	// Loop over both grids
-	for(size_t i_x=0; i_x<Nx; ++i_x) {
-		for(size_t i_p=0; i_p<Nz; ++i_p) {
+	for(size_t i_x=1; i_x<Nx-1; ++i_x) {
+		for(size_t i_p=1; i_p<Nz-1; ++i_p) {
 			double rhs_local = 0.;
 
 			// Contribution of source term
@@ -88,6 +88,7 @@ utils::Grid<double> shock_acceleration::get_rhs(utils::Grid<double> &waves,
 			rhs_local -= velocity[i_x]*(grad_j);
 			double laplace_j = (particles.get(i_x+1,i_p) - 2*particles.get(i_x,i_p)
 					+ particles.get(i_x-1,i_p))/(del_x*del_x);
+
 			rhs_local += diffusion_strength*laplace_j;
 
 			// Contribution of momentum evolution
