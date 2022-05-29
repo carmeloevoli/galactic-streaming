@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
-project(streaming CXX)
+project(streaming 
+	LANGUAGES C CXX)
 set(VERSION 3.0)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
@@ -10,6 +11,10 @@ set(STREAMING_EXTRA_LIBRARIES)
 
 set(CMAKE_CXX_STANDARD 14)
 cmake_policy(SET CMP0048 NEW)
+
+# specify the C standard
+set(C_STANDARD 14)
+set(CMAKE_C_STANDARD_REQUIRED True)
 
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -68,6 +73,16 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/output)
 #file(COPY ${STREAMING_DATA} DESTINATION ${PROJECT_BINARY_DIR}/data)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin )
+
+find_package(HDF5 REQUIRED)
+MESSAGE(STATUS "HDF5_INCLUDE_DIRS: ${HDF5_INCLUDE_DIR}")
+# Make sure serial hdf5 library works in serial form
+add_library(SerialHdf5 INTERFACE)
+target_link_libraries(SerialHdf5
+  INTERFACE ${HDF5_LIBRARIES}
+  )
+
+
 
 
 # make examples
