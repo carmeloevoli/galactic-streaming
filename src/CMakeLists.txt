@@ -8,6 +8,7 @@ add_library(streaming SHARED
 	integrator_euler.cpp
 	integrator_RK2.cpp
 	integrator_RK4.cpp
+	shock_acceleration.cpp
 	params.cpp
 	utils.cpp
 	)

@@ -4,6 +4,7 @@
 #include <gsl/gsl_integration.h>
 
 #include <stdexcept>
+#include <vector>
 
 #include "units.hpp"
 
@@ -59,24 +60,9 @@ inline double power_law_with_cutoff(double x, double slope, double x_cutoff) {
   return std::pow(x, -slope) * std::exp(-x / x_cutoff);
 }
 
-double f_source_integral(double x, void* params) {
-  double alpha = *(double*)params;
-  double f = pow(x, 2. - alpha) * (sqrt(x * x + 1.) - 1.);
-  return f;
-}
+double f_source_integral(double x, void* params);
 
-double source_integral(double alpha, double x_max) {
-  int LIMIT = 10000;
-  gsl_integration_workspace* w = gsl_integration_workspace_alloc(LIMIT);
-  double result, error;
-  gsl_function F;
-  F.function = &f_source_integral;
-  F.params = &alpha;
-  gsl_integration_qag(&F, 1, x_max, 0, 1e-6, LIMIT, 3, w, &result, &error);
-  gsl_integration_workspace_free(w);
-  return result;
-}
-
+double source_integral(double alpha, double x_max);
 template <typename T>
 size_t closest(std::vector<T> const& vec, T value) {
   auto const it = std::lower_bound(vec.begin(), vec.end(), value);

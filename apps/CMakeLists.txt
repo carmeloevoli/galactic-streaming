@@ -27,3 +27,9 @@ add_executable (test_adaptive
   )
 
 target_link_libraries (test_adaptive streaming ${STREAMING_EXTRA_LIBRARIES})
+
+add_executable (test_shock_acceleration
+	     test_shock_acceleration.cpp  
+  )
+
+target_link_libraries (test_shock_acceleration streaming ${STREAMING_EXTRA_LIBRARIES})
