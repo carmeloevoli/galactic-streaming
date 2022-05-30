@@ -1,19 +1,9 @@
-#include <integrator_euler.hpp>
-#include <integrator_RK2.hpp>
-#include <integrator_RK4.hpp>
+#include "integrators/integrator_euler.hpp"
+#include "integrators/integrator_RK2.hpp"
+#include "integrators/integrator_RK4.hpp"
+
 #include <iostream>
 #include <math.h>
-
-
-
-
-
-
-
-
-
-
-
 
 
 class test_time_dependence : public coupled_pdes::coupled_pde {
@@ -165,10 +155,6 @@ public:
 
 				double rhs_local =2.*pi*pi*sin(pi*xVal)*sin(pi*zVal);
 
-				//			if(ix==20 && iz==50) {
-				//				std::cout << " rhs " <<  rhs_local << "\n";
-				//			}
-
 				// Add derivative of waves
 				rhs_local += (waves.get_value(ix+1, iz) - 2.*waves.get_value(ix, iz)
 						+ waves.get_value(ix-1, iz))/(del_x*del_x);
@@ -176,13 +162,8 @@ public:
 						+ waves.get_value(ix, iz-1))/(del_z*del_z);
 
 				rhs_w.set_value(ix, iz, rhs_local);
-				//			if(ix==20 && iz==50) {
-				//				std::cout << " rhs " <<  rhs_w.get_value(ix, iz) << "\n";
-				//			}
 			}
 		}
-
-		//	std::cout << " end of rhs " << rhs_w.get_value(20, 50) << "\n";
 
 		return rhs_w;
 	}
@@ -249,12 +230,6 @@ int main() {
 	utils::Grid<double> waves(100,100);
 	utils::Grid<double> particles(100,100);
 
-
-
-
-//	integrators::integrator_euler integrator(10);
-//	integrators::integrator_RK2 integrator(10);
-//	integrators::integrator_RK4 integrator(waves,10);
 	double time = 0.;
 	double del_t = 0.001;
 	int i_time = 0;
@@ -266,16 +241,13 @@ int main() {
 
 		std::shared_ptr<test_steady_state> steady = std::make_shared<test_steady_state>();
 
+		//	integrators::integrator_euler integrator(steady, 10);
+		//	integrators::integrator_RK2 integrator(steady, 10);
 		integrators::integrator_RK4 integrator(steady, waves,10);
-
-
-//		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_waves;
-//		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
 
 		//	for(int i_time=0; i_time<50000; ++i_time) {
 		while(time<1.) {
 			time = integrator.step(waves, particles, time, del_t);
-//			time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
 			if(i_time%100==0) {
 				utils::Grid<double> rhs = steady->get_rhs_waves(waves, particles);
 				std::cout << " step " << i_time << " -> " << time << " ";
@@ -309,14 +281,10 @@ int main() {
 		int i_time = 0;
 		del_t = 2.e-5;
 
-//		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = r_rhs_waves_time;
-//		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
-
 		time_dep->set_ana_time_dep(waves, 0.);
 		while(time<0.01) {
 
 			time = integrator.step(waves, particles, time, del_t);
-//			time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
 			if(i_time%100==0) {
 				std::cout << " step " << i_time << " at " << time << " -> ";
 				std::cout << waves.get_value(10, 50) << " ";
@@ -348,15 +316,11 @@ int main() {
 		integrators::integrator_RK4 integrator(time_exp, waves,10);
 
 
-//		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_waves = f_rhs_time_exp;
-//		std::function<utils::Grid<double>(utils::Grid<double> &,utils::Grid<double> &)> rhs_particles = f_rhs_particles;
-
 		waves.set_value(2, 2, 1.);
 
 		while(time<1.) {
 
 			time = integrator.step(waves, particles, time, del_t);
-//			time = integrator.step(waves, particles, rhs_waves, rhs_particles, time, del_t);
 			if(i_time%10==0) {
 				std::cout << " step " << i_time << " at " << time << " -> ";
 				std::cout << waves.get_value(2, 2) << " ";

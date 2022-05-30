@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.10)
 
+# add integrators
+add_subdirectory(integrators)
+
+
 add_library(streaming SHARED
 	"${git_revision_cpp}"
 	galaxy.cpp
 	hello_code.cpp
-	integrator.cpp
-	integrator_euler.cpp
-	integrator_RK2.cpp
-	integrator_RK4.cpp
 	shock_acceleration.cpp
 	params.cpp
 	utils.cpp
@@ -17,6 +17,7 @@ add_library(streaming SHARED
 
 
 target_link_libraries(streaming
+	PUBLIC integrators
  	PUBLIC ${STREAMING_EXTRA_LIBRARIES}
  	PUBLIC SerialHdf5
  )

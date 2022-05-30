@@ -103,11 +103,6 @@ utils::Grid<double> shock_acceleration::get_rhs_particles(utils::Grid<double> &w
 		}
 	}
 
-//	// hack for extrapolation boundaries at right hand in space
-//	for(size_t i_p=1; i_p<Nz-1; ++i_p) {
-//		particles.set_value(particles.get_Nx()-1,i_p,particles.get(particles.get_Nx()-2,i_p));
-//	}
-
 	return rhs;
 
 }

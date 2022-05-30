@@ -1,4 +1,10 @@
 build
 bin
 .vscode
+.cache
+.cproject
+.project
+.settings
 *.code-workspace
+*.pdf
+*~
