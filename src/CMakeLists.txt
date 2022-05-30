@@ -12,6 +12,7 @@ add_library(streaming SHARED
 	params.cpp
 	utils.cpp
 	hdf5_output.cpp
+	coupled_pde.cpp
 	)
 
 
