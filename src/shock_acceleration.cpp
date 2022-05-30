@@ -63,7 +63,7 @@ void shock_acceleration::set_velocity() {
 
 }
 
-utils::Grid<double> shock_acceleration::get_rhs(utils::Grid<double> &waves,
+utils::Grid<double> shock_acceleration::get_rhs_particles(utils::Grid<double> &waves,
 		utils::Grid<double> &particles) {
 	// Waves are not needed in this test case
 	utils::Grid<double> rhs(particles);
@@ -78,7 +78,8 @@ utils::Grid<double> shock_acceleration::get_rhs(utils::Grid<double> &waves,
 			double rhs_local = 0.;
 
 			// Contribution of source term
-			if(i_x == index_sources && i_p==2) {
+//			if(i_x == index_sources && i_p==2) {
+			if(div_vel[i_x]<-1.e-2 && i_p==2) {
 				rhs_local += source_strength;
 			}
 
@@ -92,13 +93,20 @@ utils::Grid<double> shock_acceleration::get_rhs(utils::Grid<double> &waves,
 			rhs_local += diffusion_strength*laplace_j;
 
 			// Contribution of momentum evolution
-			double mom_deriv_pj = (particles.get(i_x,i_p+1)*p_val[i_p+1] -
-					particles.get(i_x,i_p-1)*p_val[i_p-1])/(p_val[i_p+1] - p_val[i_p-1]);
+			double mom_deriv_pj = (particles.get(i_x,i_p)*p_val[i_p] -
+					particles.get(i_x,i_p-1)*p_val[i_p-1])/(p_val[i_p] - p_val[i_p-1]);
+//			double mom_deriv_pj = (particles.get(i_x,i_p+1)*p_val[i_p+1] -
+//					particles.get(i_x,i_p-1)*p_val[i_p-1])/(p_val[i_p+1] - p_val[i_p-1]);
 			rhs_local += 1./3.*div_vel[i_x]*mom_deriv_pj;
 
 			rhs.set_value(i_x, i_p, rhs_local);
 		}
 	}
+
+//	// hack for extrapolation boundaries at right hand in space
+//	for(size_t i_p=1; i_p<Nz-1; ++i_p) {
+//		particles.set_value(particles.get_Nx()-1,i_p,particles.get(particles.get_Nx()-2,i_p));
+//	}
 
 	return rhs;
 
@@ -112,5 +120,39 @@ utils::Grid<double> shock_acceleration::get_rhs_waves(utils::Grid<double> &waves
 	return rhs;
 }
 
+
+void shock_acceleration::set_BCs(utils::Grid<double> &waves,
+			utils::Grid<double> &particles) {
+
+	// Boundaries for particles
+	size_t Nx=particles.get_Nx();
+	size_t Np=particles.get_Nz();
+	// Lower and upper x-boundary
+	for(size_t i_p=0; i_p<Np; ++i_p) {
+		particles.set_value(0   , i_p, 0.);
+		particles.set_value(Nx-1,i_p,particles.get(Nx-2,i_p));
+	}
+	// Lower and upper p-boundary
+	for(size_t i_x=0; i_x<Nx; ++i_x) {
+		particles.set_value(i_x,0   , 0.);
+		particles.set_value(i_x,Np-1, 0.);
+	}
+
+	// Boundaries for waves
+	Nx=waves.get_Nx();
+	Np=waves.get_Nz();
+	// Lower and upper x-boundary
+	for(size_t i_p=0; i_p<Np; ++i_p) {
+		waves.set_value(0   , i_p, 0.);
+		waves.set_value(Nx-1, i_p, 0.);
+	}
+	// Lower and upper z-boundary
+	for(size_t i_x=0; i_x<Nx; ++i_x) {
+		waves.set_value(i_x,0   , 0.);
+		waves.set_value(i_x,Np-1, 0.);
+	}
+
+
+}
 
 }

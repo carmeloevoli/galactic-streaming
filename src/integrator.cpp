@@ -3,9 +3,11 @@
 using namespace integrators;
 
 double integrator_base::step_adaptive(utils::Grid<double> &waves,  utils::Grid<double> &particles,
-        std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_waves,
-        std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_particles,
         double time, double & del_t, double epsilon0) {
+//double integrator_base::step_adaptive(utils::Grid<double> &waves,  utils::Grid<double> &particles,
+//        std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_waves,
+//        std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_particles,
+//        double time, double & del_t, double epsilon0) {
 
 	// Store previous step
 	utils::Grid<double> waves_old = waves;
@@ -19,7 +21,8 @@ double integrator_base::step_adaptive(utils::Grid<double> &waves,  utils::Grid<d
 
 		// One full step
 		double time_full = time;
-		time_full = step(waves, particles, rhs_waves, rhs_particles, time_full, del_t);
+		time_full = step(waves, particles, time_full, del_t);
+//		time_full = step(waves, particles, rhs_waves, rhs_particles, time_full, del_t);
 		// store results
 		utils::Grid<double> waves_full= waves;
 		utils::Grid<double> particles_full = particles;
@@ -30,8 +33,10 @@ double integrator_base::step_adaptive(utils::Grid<double> &waves,  utils::Grid<d
 
 		// Two half steps
 		double time_half = time;
-		time_half = step(waves, particles, rhs_waves, rhs_particles, time_half, 0.5*del_t);
-		time_half = step(waves, particles, rhs_waves, rhs_particles, time_half, 0.5*del_t);
+		time_half = step(waves, particles, time_half, 0.5*del_t);
+		time_half = step(waves, particles, time_half, 0.5*del_t);
+//		time_half = step(waves, particles, rhs_waves, rhs_particles, time_half, 0.5*del_t);
+//		time_half = step(waves, particles, rhs_waves, rhs_particles, time_half, 0.5*del_t);
 
 		// Compare results
 		utils::Grid<double> diff_waves = waves_full - waves;

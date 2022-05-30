@@ -6,12 +6,15 @@
 namespace integrators {
 class integrator_euler : public integrator_base {
 public:
-	integrator_euler(int verbosity);
+	integrator_euler(std::shared_ptr<coupled_pdes::coupled_pde> pde, int verbosity);
+//	integrator_euler(int verbosity);
 
 	double step(utils::Grid<double> &waves,  utils::Grid<double> &particles,
-			std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_waves,
-			std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_particles,
 			double time, double del_t);
+//	double step(utils::Grid<double> &waves,  utils::Grid<double> &particles,
+//			std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_waves,
+//			std::function<utils::Grid<double>(utils::Grid<double> &, utils::Grid<double> &)> &rhs_particles,
+//			double time, double del_t);
 };
 }  // namespace integrators
 
