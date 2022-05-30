@@ -20,7 +20,7 @@ def load_step(h5group, i_step) :
 
 h5in = h5py.File("../bin/shock_test.h5", 'r')
 
-out_step = 98000
+out_step = 950000
 
 #open the main group
 h5group = h5in['Data']
@@ -40,17 +40,17 @@ print(particles[:,2])
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(x_pos, particles[:,2], linestyle='-',color='k')
-plt.ylim([0., 2.e-3])
+plt.ylim([0., 5.e-3])
 fig.savefig('shock_test.pdf')
 
 # Generate a related figure
-powerlaw = 1.e-3*z_pos**-2.
+powerlaw = 8.e-3*z_pos**-2.
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(z_pos, particles[50,:], linestyle='-',color='k')
 ax.plot(z_pos, powerlaw, linestyle=':',color='r')
 plt.xlim([1., 1.e2])
-plt.ylim([1.e-8, 2.e-3])
+plt.ylim([1.e-7, 1.e-2])
 ax.set_xscale('log')
 ax.set_yscale('log')
 fig.savefig('spec_test.pdf')
