@@ -16,6 +16,10 @@ add_library(streaming SHARED
 	)
 
 
+target_include_directories(streaming
+	PUBLIC ${HDF5_INCLUDE_DIR}
+	)
+
 target_link_libraries(streaming
 	PUBLIC integrators
  	PUBLIC ${STREAMING_EXTRA_LIBRARIES}
