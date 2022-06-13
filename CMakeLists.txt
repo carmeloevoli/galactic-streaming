@@ -82,7 +82,25 @@ target_link_libraries(SerialHdf5
   INTERFACE ${HDF5_LIBRARIES}
   )
 
+if(${HDF5_IS_PARALLEL})
+  
+  find_package(MPI)
+  MESSAGE(" Loaded MPI for parallel HDF5 ")
+  MESSAGE(STATUS " Found include path at ${MPI_CXX_INCLUDE_PATH}")
 
+  target_include_directories(SerialHdf5
+    INTERFACE ${HDF5_INCLUDE_DIR}
+    INTERFACE ${MPI_CXX_INCLUDE_PATH}
+    )
+  target_compile_definitions(SerialHdf5 INTERFACE OMPI_SKIP_MPICXX)
+
+else()
+
+  target_include_directories(SerialHdf5
+    INTERFACE ${HDF5_INCLUDE_DIR}
+    )
+  
+endif()
 
 
 # make examples
